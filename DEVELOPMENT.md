@@ -27,14 +27,11 @@ npm run invoke
 
 ### Deploy to AWS
 ```bash
-# Deploy with your runtime ID
-./deploy.sh my-agent-service-XXXXXXXXXX
+# Deploy with your runtime ID and TypeScript SDK path
+npm run deploy -- my-agent-service-XXXXXXXXXX ./bedrock-agentcore-sdk-typescript-private
 
-# Or with custom bedrock-agentcore path
-./deploy.sh my-agent-service-XXXXXXXXXX /path/to/bedrock-agentcore
-
-# Or use npm script (will prompt for runtime ID)
-npm run deploy
+# Example
+npm run deploy -- my-agent-service-abc123def456 ./private-bedrock-agentcore-sdk-typescript-staging
 ```
 
 ## Project Structure
@@ -68,13 +65,7 @@ The project uses a local `bedrock-agentcore` package via npm link. The Docker se
 3. **build-docker.sh**: Handles path configuration via environment variables
 
 ### Custom bedrock-agentcore Path
-
-Set the path via environment variable:
-```bash
-BEDROCK_AGENTCORE_PATH=/custom/path npm start
-```
-
-Or pass it to deploy script:
+Ppass it to deploy script:
 ```bash
 ./deploy.sh my-runtime-id /custom/path
 ```
@@ -104,7 +95,7 @@ npm run invoke
 - **Docker Desktop** - For containerized development
 - **AWS CLI** - Configured with appropriate permissions
 - **Node.js 20+** - For local development
-- **bedrock-agentcore package** - Linked locally or at specified path
+- **bedrock-agentcore TypeScript SDK** - Must be copied into the same directory as the Dockerfile
 
 ### Required AWS Resources
 - ECR repository (created automatically by deploy script)

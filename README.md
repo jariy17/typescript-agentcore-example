@@ -8,12 +8,12 @@ A Bedrock Agent Core service built with TypeScript and Express.
 - npm
 - Docker
 - AWS CLI configured with appropriate permissions
-- Access to the `bedrock-agentcore-sdk-typescript-private` package
+- The bedrock-agentcore TypeScript SDK must be in the same directory as the Dockerfile
 
 ## Setup
 
 1. Clone this repository
-2. Ensure the `bedrock-agentcore-sdk-typescript-private` package is available at `../bedrock-agentcore-sdk-typescript-private` (or specify a custom path)
+2. **Required**: Copy the bedrock-agentcore TypeScript SDK into this directory
 3. Install dependencies:
    ```bash
    npm install
@@ -68,14 +68,11 @@ npm run invoke
 ### Deploy to AWS
 
 ```bash
-# Deploy with runtime ID (required)
-npm run deploy -- your-runtime-id-here
-
-# Deploy with custom bedrock-agentcore path
-npm run deploy -- your-runtime-id-here /path/to/bedrock-agentcore
+# Deploy with runtime ID (required) and TypeScript SDK path
+npm run deploy -- your-runtime-id-here ./path-to-typescript-sdk
 
 # Example
-npm run deploy -- my-agent-service-abc123def456 ../bedrock-agentcore-sdk-typescript-private
+npm run deploy -- my-agent-service-abc123def456 ./bedrock-agentcore-sdk-typescript-private
 ```
 
 The deployment process will:

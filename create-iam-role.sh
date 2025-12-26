@@ -9,10 +9,6 @@ set -e
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 REGION=${AWS_REGION:-us-west-2}
 
-echo "Creating IAM role for Bedrock AgentCore Runtime..."
-echo "Account ID: ${ACCOUNT_ID}"
-echo "Region: ${REGION}"
-
 # Role name
 ROLE_NAME="BedrockAgentCoreRuntimeRole"
 
@@ -121,37 +117,24 @@ EOF
 )
 
 # Check if role already exists
-if aws iam get-role --role-name ${ROLE_NAME} 2>/dev/null; then
-  echo "Role ${ROLE_NAME} already exists."
-  echo "Role ARN: $(aws iam get-role --role-name ${ROLE_NAME} --query 'Role.Arn' --output text)"
+if aws iam get-role --role-name ${ROLE_NAME} >/dev/null 2>&1; then
+  aws iam get-role --role-name ${ROLE_NAME} --query 'Role.Arn' --output text
   exit 0
 fi
 
 # Create the IAM role
-echo "Creating IAM role: ${ROLE_NAME}"
 aws iam create-role \
   --role-name ${ROLE_NAME} \
   --assume-role-policy-document "${TRUST_POLICY}" \
   --description "Service role for AWS Bedrock AgentCore Runtime" \
-  --tags Key=ManagedBy,Value=Script Key=Purpose,Value=BedrockAgentCore
+  --tags Key=ManagedBy,Value=Script Key=Purpose,Value=BedrockAgentCore >/dev/null
 
-echo "Attaching permissions policy to role..."
 aws iam put-role-policy \
   --role-name ${ROLE_NAME} \
   --policy-name AgentCoreRuntimeExecutionPolicy \
-  --policy-document "${PERMISSIONS_POLICY}"
+  --policy-document "${PERMISSIONS_POLICY}" >/dev/null
 
 # Get the role ARN
 ROLE_ARN=$(aws iam get-role --role-name ${ROLE_NAME} --query 'Role.Arn' --output text)
 
-echo ""
-echo "✅ IAM Role created successfully!"
-echo ""
-echo "Role Name: ${ROLE_NAME}"
-echo "Role ARN:  ${ROLE_ARN}"
-echo ""
-echo "Use this ARN in your create-agent-runtime command:"
-echo "  --role-arn ${ROLE_ARN}"
-echo ""
-echo "You can also set it as an environment variable:"
-echo "  export ROLE_ARN=${ROLE_ARN}"
+echo "${ROLE_ARN}"

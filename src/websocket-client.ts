@@ -3,12 +3,16 @@ import WebSocket from 'ws'
 /**
  * Simple WebSocket client to test the agent's WebSocket endpoint
  */
-export async function invokeWebSocketAgent(message: string, url = 'ws://localhost:8080/ws'): Promise<void> {
+export async function invokeWebSocketAgent(
+  message: string,
+  url = 'ws://localhost:8080/ws'
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(url, {
       headers: {
-        'x-amzn-bedrock-agentcore-runtime-session-id': 'test-session-' + Date.now()
-      }
+        'x-amzn-bedrock-agentcore-runtime-session-id':
+          'test-session-' + Date.now(),
+      },
     })
 
     ws.on('open', () => {
@@ -35,6 +39,5 @@ export async function invokeWebSocketAgent(message: string, url = 'ws://localhos
 
 // Example usage
 if (import.meta.url === `file://${process.argv[1]}`) {
-  invokeWebSocketAgent('Calculate 5 + 3')
-    .catch(console.error)
+  invokeWebSocketAgent('Calculate 5 + 3').catch(console.error)
 }

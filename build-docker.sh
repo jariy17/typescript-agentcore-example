@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e  # Exit on any error
+
 # Build Docker image script
 # Usage: ./build-docker.sh <bedrock-agentcore-path>
 
@@ -22,9 +24,12 @@ if [ ! -d "$BEDROCK_AGENTCORE_PATH" ]; then
 fi
 
 # Build the Docker image with the build argument
-docker build \
+if ! docker build \
     --build-arg BEDROCK_AGENTCORE_PATH="$BEDROCK_AGENTCORE_PATH" \
     -t my-agent-service \
-    .
+    .; then
+    echo "Error: Docker build failed"
+    exit 1
+fi
 
 echo "Docker build completed!"

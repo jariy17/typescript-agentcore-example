@@ -5,7 +5,7 @@
     "scripts": {
         "build": "tsc",
         "start": "tsc && node dist/index.js",
-        "invoke": "tsx src/invoke.ts",
+        "invoke": "tsx src/invoke.ts \"$@\"",
         "deploy": "bash deploy.sh \"$@\"",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/**/*.ts --fix",
