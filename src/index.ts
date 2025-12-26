@@ -1,6 +1,40 @@
 import { z } from 'zod'
-import { Agent, BedrockModel, tool } from '@strands-agents/sdk'
+import { Agent, AgentStreamEvent, BedrockModel, tool } from '@strands-agents/sdk'
 import { BedrockAgentCoreApp } from 'bedrock-agentcore/runtime'
+
+function processEvent(event: AgentStreamEvent): string | undefined {
+  // Track agent loop lifecycle
+  switch (event.type) {
+    case 'beforeInvocationEvent':
+      console.log('🔄 Agent loop initialized')
+      break
+    case 'beforeModelCallEvent':
+      console.log('▶️ Agent loop cycle starting')
+      break
+    case 'afterModelCallEvent':
+      console.log(`📬 New message created: ${event.stopData?.message.role}`)
+      break
+    case 'beforeToolsEvent':
+      console.log("About to execute tool!")
+      break
+    case 'beforeToolsEvent':
+      console.log("Finished execute tool!")
+      break
+    case 'afterInvocationEvent':
+      console.log('✅ Agent loop completed')
+      break
+  }
+
+  // Track tool usage
+  if (event.type === 'modelContentBlockStartEvent' && event.start?.type === 'toolUseStart') {
+    console.log(`\n🔧 Using tool: ${event.start.name}`)
+  }
+
+  // Show text snippets
+  if (event.type === 'modelContentBlockDeltaEvent' && event.delta.type === 'textDelta') {
+    return event.delta.text
+  }
+}
 
 const agent = new Agent({
   model: new BedrockModel({
@@ -45,7 +79,12 @@ const app = new BedrockAgentCoreApp({
     const prompt =
       typeof request === 'string' ? request : JSON.stringify(request)
     console.log('Prompt: ', prompt)
-    return (await agent.invoke(prompt)).toString()
+    return (async function* () {
+      for await (const event of agent.stream(prompt)) {
+        const text = processEvent(event)
+        if (text) yield text
+      }
+    })()
   },
   websocketHandler: async (socket, context) => {
     console.log(`WebSocket connected for session: ${context.sessionId}`)
