@@ -39,4 +39,4 @@ const response = await client.send(command)
 const textResponse = await response.response?.transformToString()
 
 console.log('\x1b[32mResponse:\x1b[0m', textResponse)
-console.log("Full Response:", response)
+console.log('Full Response:', response)
