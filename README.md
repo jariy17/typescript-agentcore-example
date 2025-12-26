@@ -14,9 +14,20 @@ A Bedrock Agent Core service built with TypeScript and Express.
 
 1. Clone this repository
 2. **Required**: Copy the bedrock-agentcore TypeScript SDK into this directory
-3. Install dependencies:
+3. Install dependencies for this respository:
    ```bash
    npm install
+   ```
+4. Go into bedrock-agentcore directory and build and link the repository
+   ```bash
+   npm install
+   npm run build
+   npm link
+   ```
+5. Go back to this repository and to link local bedrock-agentore 
+  ```bash
+   npm link bedrock-agentcore
+   npm run build 
    ```
 
 ## Running Locally
