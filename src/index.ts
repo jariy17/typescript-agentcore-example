@@ -8,10 +8,10 @@ const app = new BedrockAgentCoreApp({
         message: 'Hello from AgentCore!',
         sessionId: context.sessionId,
         requestId: context.requestId,
-        received: request
+        received: request,
       }
-    }
-  }
+    },
+  },
 })
 
 app.run()
