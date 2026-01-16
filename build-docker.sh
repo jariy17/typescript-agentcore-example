@@ -3,31 +3,12 @@
 set -e  # Exit on any error
 
 # Build Docker image script
-# Usage: ./build-docker.sh <bedrock-agentcore-path>
+# Usage: ./build-docker.sh
 
-# Check if bedrock-agentcore path is provided
-if [ -z "$1" ]; then
-    echo "Error: bedrock-agentcore path is required"
-    echo "Usage: ./build-docker.sh <bedrock-agentcore-path>"
-    exit 1
-fi
+echo "Building Docker image..."
 
-BEDROCK_AGENTCORE_PATH="$1"
-
-echo "Building Docker image with bedrock-agentcore path: $BEDROCK_AGENTCORE_PATH"
-
-# Check if the path exists
-if [ ! -d "$BEDROCK_AGENTCORE_PATH" ]; then
-    echo "Error: bedrock-agentcore directory not found at: $BEDROCK_AGENTCORE_PATH"
-    echo "Usage: ./build-docker.sh <bedrock-agentcore-path>"
-    exit 1
-fi
-
-# Build the Docker image with the build argument
-if ! docker build \
-    --build-arg BEDROCK_AGENTCORE_PATH="$BEDROCK_AGENTCORE_PATH" \
-    -t my-agent-service \
-    .; then
+# Build the Docker image
+if ! docker build -t my-agent-service .; then
     echo "Error: Docker build failed"
     exit 1
 fi

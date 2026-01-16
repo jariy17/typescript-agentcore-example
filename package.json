@@ -6,7 +6,8 @@
         "build": "tsc",
         "start": "tsc && node dist/index.js",
         "invoke": "tsx src/invoke.ts \"$@\"",
-        "deploy": "bash deploy.sh \"$@\"",
+        "initialize": "bash initialize.sh \"$@\"",
+        "update": "bash update.sh \"$@\"",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/**/*.ts --fix",
         "format": "prettier --write src/**/*.ts",
@@ -16,7 +17,7 @@
     "dependencies": {
         "@aws-sdk/client-bedrock-agentcore": "latest",
         "@strands-agents/sdk": "latest",
-        "bedrock-agentcore": "*",
+        "bedrock-agentcore": "file:bedrock-agentcore-0.1.1.tgz",
         "express": "^4.18.2",
         "tsx": "^4.21.0",
         "ws": "^8.18.3",

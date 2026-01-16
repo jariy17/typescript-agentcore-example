@@ -4,30 +4,23 @@ A Bedrock Agent Core service built with TypeScript and Express.
 
 ## Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm
 - Docker
 - AWS CLI configured with appropriate permissions
-- The bedrock-agentcore TypeScript SDK must be in the same directory as the Dockerfile
+- The `bedrock-agentcore-0.1.1.tgz` file in the project root directory
 
 ## Setup
 
 1. Clone this repository
-2. **Required**: Copy the bedrock-agentcore TypeScript SDK into this directory
-3. Install dependencies for this respository:
+2. Ensure `bedrock-agentcore-0.1.1.tgz` is in the project root directory
+3. Install dependencies:
    ```bash
    npm install
    ```
-4. Go into bedrock-agentcore directory and build and link the repository
+4. Build the project:
    ```bash
-   npm install
    npm run build
-   npm link
-   ```
-5. Go back to this repository and to link local bedrock-agentore 
-  ```bash
-   npm link bedrock-agentcore
-   npm run build 
    ```
 
 ## Running Locally
@@ -45,12 +38,12 @@ The service will be available at `http://localhost:8080`
 
 ### Option 2: Docker
 ```bash
-# Build and run with Docker using default bedrock-agentcore path
-docker build --build-arg BEDROCK_AGENTCORE_PATH=../bedrock-agentcore-sdk-typescript-private -t my-agent-service .
+# Build and run with Docker
+docker build -t my-agent-service .
 docker run -p 8080:8080 my-agent-service
 
 # Or use the build script
-bash build-docker.sh ../bedrock-agentcore-sdk-typescript-private
+bash build-docker.sh
 docker run -p 8080:8080 my-agent-service
 ```
 
@@ -71,25 +64,53 @@ npm run invoke
    - IAM (to get role ARN)
    - STS (to get account ID)
 
-2. Create the required IAM role:
-   ```bash
-   bash create-iam-role.sh
-   ```
+2. The IAM role will be created automatically by the scripts
 
-### Deploy to AWS
+### First-Time Setup (Initialize)
+
+To create a new agent runtime for the first time:
 
 ```bash
-# Deploy with runtime ID (required) and TypeScript SDK path
-npm run deploy -- your-runtime-id-here ./path-to-typescript-sdk
+# Initialize with default name "my-agent-service"
+npm run initialize
+
+# Or specify a custom name
+npm run initialize -- my-custom-name
 
 # Example
-npm run deploy -- my-agent-service-abc123def456 ./bedrock-agentcore-sdk-typescript-private
+npm run initialize -- tjariy_bug_bash
 ```
 
-The deployment process will:
-1. Lint and format your code
-2. Build TypeScript
-3. Create/verify ECR repository
+The initialization process will:
+1. Build TypeScript
+2. Create IAM role (if needed)
+3. Create ECR repository
+4. Build and push Docker image
+5. Create a new Bedrock Agent Runtime
+6. Display the generated Runtime ID (save this for updates!)
+
+**Important**: Save the Runtime ID from the output - you'll need it for updates.
+
+### Updating an Existing Runtime
+
+To update an existing agent runtime:
+
+```bash
+# Update with your runtime ID
+npm run update -- <runtime-id>
+
+# Example
+npm run update -- tjariy_bug_bash-abc1234567
+```
+
+**Runtime ID Format**: `<name>-<10-character-suffix>`
+- Example: `my-agent-service-abc1234567`
+- Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,99}-[a-zA-Z0-9]{10}`
+
+The update process will:
+1. Validate runtime ID format
+2. Verify runtime exists
+3. Build TypeScript
 4. Build and push Docker image
 5. Update the Bedrock Agent Runtime
 
@@ -97,16 +118,19 @@ The deployment process will:
 
 Wait about 1 minute for the update to complete, then test:
 ```bash
-npm run invoke
+npm run invoke -- <runtime-arn>
 ```
+
+The ARN will be displayed at the end of the initialize or update process.
 
 ## Available Scripts
 
 - `npm start` - Build and run the service locally
 - `npm run dev` - Development mode with TypeScript compilation
 - `npm run build` - Compile TypeScript
-- `npm run invoke` - Test the service (local or deployed)
-- `npm run deploy -- <runtime-id> [bedrock-path]` - Deploy to AWS
+- `npm run invoke -- <runtime-arn>` - Test the service (local or deployed)
+- `npm run initialize [name]` - Create a new agent runtime (first-time setup)
+- `npm run update -- <runtime-id>` - Update an existing agent runtime
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Prettier
 - `npm run check` - Run lint and format
@@ -118,7 +142,8 @@ npm run invoke
 │   ├── index.ts          # Main service entry point
 │   └── invoke.ts         # Test invocation script
 ├── Dockerfile            # Docker configuration
-├── deploy.sh            # AWS deployment script
+├── initialize.sh         # First-time runtime creation script
+├── update.sh            # Runtime update script
 ├── build-docker.sh      # Docker build script
 ├── create-iam-role.sh   # IAM role creation script
 └── package.json         # Dependencies and scripts
@@ -128,14 +153,14 @@ npm run invoke
 
 The service uses the following configuration:
 - **Port**: 8080 (configurable via environment)
-- **AWS Region**: us-west-2 (configurable in deploy.sh)
-- **ECR Repository**: my-agent-service
+- **AWS Region**: us-west-2 (configurable in initialize.sh and update.sh)
+- **ECR Repository**: Based on runtime name/ID
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Bedrock package not found**: Ensure the bedrock-agentcore package path is correct
+1. **Bedrock package not found**: Ensure `bedrock-agentcore-0.1.1.tgz` is in the project root directory
 2. **Docker build fails**: Check that Docker is running and you have sufficient permissions
 3. **AWS deployment fails**: Verify AWS CLI configuration and IAM permissions
 4. **Service not responding**: Check that port 8080 is available and not blocked by firewall

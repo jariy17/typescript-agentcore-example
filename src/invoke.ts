@@ -7,7 +7,7 @@ import {
 const agentRuntimeArn = process.argv[2]
 if (!agentRuntimeArn) {
   console.error('Error: Agent runtime ARN is required')
-  console.error('Usage: npm run invoke <agent-runtime-arn>')
+  console.error('Usage: npm run invoke -- <agent-runtime-arn>')
   process.exit(1)
 }
 
@@ -26,7 +26,6 @@ const input = {
     Math.random().toString(10).substring(7),
   agentRuntimeArn,
   qualifier: 'DEFAULT',
-  accept: 'text/event-stream',
   contentType: 'application/json',
   payload: JSON.stringify(input_text),
 }
